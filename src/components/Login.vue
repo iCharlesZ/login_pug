@@ -4,22 +4,26 @@
       .left-ear(:style="{left: accFocus ? getPos.calcLeftEar + 'em' : ''}")
       .right-ear(:style="{left: accFocus ? getPos.calcRightEar + 'em' : ''}")
       .head
-        .left-eye(:class="{doe: accLen}"  :style="{left: accFocus ? getPos.calcLeftEye + 'em' : ''}")
-        .right-eye(:class="{doe: accLen}"  :style="{left: accFocus ? getPos.calcRightEye + 'em' : ''}")
+        .left-eye(:class="{doe: accisEmail}"  :style="{left: accFocus ? getPos.calcLeftEye + 'em' : ''}")
+        .right-eye(:class="{doe: accisEmail}"  :style="{left: accFocus ? getPos.calcRightEye + 'em' : ''}")
         .face(:style="{left: accFocus ? getPos.calcFace + 'em' : ''}")
           .nose(:style="{left: accFocus ? getPos.calcNose + 'em' : ''}")
-          .mouth(:class="{doe: accLen, show: pwdEyeObj.pwdHide}")
+          .mouth(:class="{doe: accisEmail, show: pwdEyeObj.pwdHide}")
       .body
       .left-arm(:class="{show: pwdEyeObj.pwdHide}")
       .right-arm(:class="{show: pwdEyeObj.pwdHide}")
     .login-form
       .username
-        input(type="text" name="username" autocomplete="off"
+        input(type="text" name="username" id="username" autocomplete="off"
           v-model="account" @focus="accountFocus" @blur="accountBlur")
+        label(for="username" :class="{labelUP: accFocus || account}") email@domain.com
       .password
-        input(:type="pwdIptType" name="password" autocomplete="off"
+        input(:type="pwdIptType" name="password" id="password" autocomplete="off"
           v-model="password" @focus="passwordFocus" @blur="passwordBlur")
+        label(for="password" :class="{labelUP: pwdFocus || password}") your password
         .pwd-eye(v-if="shoPwdEye" @click="showPwd" :class="pwdEyeObj" @blur="eyeBlur")
+      .submit
+        button(@click="login") Sign in
 </template>
 
 <script>
@@ -31,7 +35,7 @@ export default {
       password: "",
       accFocus: false,
       pwdFocus: false,
-      accLen: false,
+      accisEmail: false,
       getPos: {
         calcFace: 0,
         calcNose: 0,
@@ -108,11 +112,16 @@ export default {
       this.getPos.calcRightEye = 4 + (right_eye > 2 ? 2 : right_eye);
       this.getPos.calcLeftEar = 1.5 - (left_ear > 1 ? 1 : left_ear);
       this.getPos.calcRightEar = 7.5 - (right_ear > 1 ? 1 : right_ear);
-      if (val.length >= 6) {
-        this.accLen = true;
+      if (val.indexOf("@") !== -1) {
+        this.accisEmail = true;
       } else {
-        this.accLen = false;
+        this.accisEmail = false;
       }
+    },
+    login() {
+      console.log(`login`);
+      this.accFocus = false;
+      this.pwdFocus = false;
     }
   }
 };
@@ -125,7 +134,7 @@ export default {
   align-items: center
   margin-top: 5rem
   width: 20em
-  height: 25em
+  height: 28em
   background: #3dceba
   border-radius: 10px
   box-shadow: 0 0 16px #333
@@ -324,20 +333,40 @@ export default {
     padding: 0 2.5em
 
     .username,
-    .password
+    .password,
+    .submit
       position: relative
       width: 100%
       margin: 20px 0
       border-radius: 5px
-      overflow: hidden
 
-      input
+      input,
+      button
         width: calc(100% - 20px)
         padding: 0 10px
-        height: 2.5em
+        height: 3em
         border: 0
-        border-radius: 5px
+        border-radius: 3px
         outline: none
+
+      label
+        position: absolute
+        top: 0
+        left: 0
+        width: calc(100% - 10px)
+        height: 100%
+        display: flex
+        align-items: center
+        padding-left: 10px
+        cursor: text
+        color: #666
+        font-weight: bold
+
+        &.labelUP
+          transform: scale(0.5)
+          transition: all 0.5s
+          left: -3.3em
+          top: -1.8em
 
     .password
       > input
@@ -358,4 +387,12 @@ export default {
           background-image: url("../assets/password-show.png")
         &.pwdHide
           background-image: url("../assets/password-hide.png")
+
+    .submit
+      box-shadow: 0 0 2px 0 #333
+
+      button
+        width: 100%
+        background: #aeebff
+        color: #333
 </style>
